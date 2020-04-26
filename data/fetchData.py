@@ -1,6 +1,23 @@
-import time, json, threading
+import time, json, threading, random, string
+from datetime import datetime
+from data.models import Video
+
+def getRandomString(length):
+    return ''.join(random.choice(string.ascii_letters) for m in range(length))
 
 def fetchData(timeInterval):
+
+    # mocking the API for the moment
+    video = Video(videoId=getRandomString(6), 
+                    title='Hello There, this is from youtube, yay! corona',
+                    description='Some Random Stuff',
+                    thumbnailURL='https://www.google.com',
+                    publishedAt=datetime.now()
+                )
+
+    video.save()
+
+    # sleep for he desired interval and fetch again
     time.sleep(timeInterval)
     fetchData(timeInterval)
 

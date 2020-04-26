@@ -4,7 +4,7 @@ from django.contrib.postgres.search import SearchVectorField
 
 # table scema for storing data
 class Video(models.Model):
-    id = models.SlugField(max_length = 50, null = False, primary_key = True)
+    videoId = models.SlugField(max_length = 50, null = False, primary_key = True)
     title = models.CharField(max_length = 200, null = False)
     description = models.CharField(max_length = 2000, null = False)
     publishedAt = models.DateTimeField(null = False)

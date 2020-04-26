@@ -1,9 +1,13 @@
-from rest_framework import serializers
+from rest_framework import serializers, pagination
 from .models import Video
 
 class VideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Video
-        fields = ('id', 'title', 'description', 'publishedAt', 'thumbnailURL', )
-        
+        fields = ['videoId', 'title', 'description', 'publishedAt', 'thumbnailURL']
+
+class PaginatedVideoSerializer(pagination.PageNumberPagination):
+
+    class Meta:
+        object_serializer_class = VideoSerializer
