@@ -1,21 +1,57 @@
 import time, json, threading, random, string
-from datetime import datetime
+from datetime import datetime, timedelta
 from data.models import Video
+import requests
 
-def getRandomString(length):
-    return ''.join(random.choice(string.ascii_letters) for m in range(length))
+def insertVideoInDatabase(youtubeResponse):
+    videos = youtubeResponse['items']
+    print('FETCHED VIDEOS: ', len(videos))
+    for video in videos:
+        videoId = video['id']['videoId']
+        title = video['snippet']['title']
+        description = video['snippet']['description']
+        publishedAt = video['snippet']['publishedAt']
+        thumbnailURL = video['snippet']['thumbnails']['default']["url"]
+        try:
+            videoObject = Video(
+                videoId = videoId,
+                title = title,
+                description = description,
+                publishedAt = publishedAt,
+                thumbnailURL = thumbnailURL
+            )
+            videoObject.save()
+        except Exception as e:
+            print('Could not insert video into database: ')
+            print(e)
 
-def fetchData(timeInterval):
 
-    # mocking the API for the moment
-    video = Video(videoId=getRandomString(6), 
-                    title='Hello There, this is from youtube, yay! corona',
-                    description='Some Random Stuff',
-                    thumbnailURL='https://www.google.com',
-                    publishedAt=datetime.now()
-                )
+def fetchData(query, timeInterval, apiKey):
 
-    video.save()
+    # compute previous time to query youtube API
+    publishedAfter = (datetime.now() - timedelta(seconds = timeInterval)).isoformat("T") + "Z" 
+    # Z at the end is for UTC format
+
+    params = {
+        "part": "snippet",
+        "eventType": "completed",
+        "maxResults": 50,
+        "order": "date",
+        "publishedAfter": publishedAfter,
+        "q": query,
+        "relevanceLanguage": "en",
+        "type": "video",
+        "key": apiKey
+    }
+    
+    result = requests.get('https://www.googleapis.com/youtube/v3/search', params=params)
+    
+    if result.status_code == 200:
+        insertVideoInDatabase(json.loads(result.text))
+    else:
+        print('########### API RESPONSE ERROR ###########')
+        print(result.json())
+        print('##########################################')
 
     # sleep for he desired interval and fetch again
     time.sleep(timeInterval)
@@ -27,5 +63,7 @@ def startFetchingData():
         config = json.load(f)
 
     timeInterval = int(config.get('ApiFetchInterval'))
-    apiFetchThread = threading.Thread(target = fetchData, args=(timeInterval, ))
+    apiKey = config.get('APIKey')
+    searchQuery = config.get('youtubeSearchQuery')
+    apiFetchThread = threading.Thread(target = fetchData, args=(searchQuery, timeInterval, apiKey, ))
     apiFetchThread.start()
