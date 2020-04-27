@@ -1,5 +1,5 @@
 {
-    "ApiFetchInterval": "300",
+    "apiFetchInterval": "60",
     "APIKey": "AIzaSyCpDqp8Pzt-DoAPNRmYaq2MZZ7LGTDuTUM",
     "youtubeSearchQuery": "corona"
 }

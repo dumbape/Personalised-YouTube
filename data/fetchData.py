@@ -26,7 +26,17 @@ def insertVideoInDatabase(youtubeResponse):
             print(e)
 
 
-def fetchData(query, timeInterval, apiKey):
+def fetchData():
+
+    try:
+        with open('data/config.json') as f:
+            config = json.load(f)
+    except Exception as e:
+        print('ERROR: ', e)
+
+    timeInterval = int(config.get('apiFetchInterval'))
+    apiKey = config.get('APIKey')
+    searchQuery = config.get('youtubeSearchQuery')
 
     # compute previous time to query youtube API
     publishedAfter = (datetime.now() - timedelta(seconds = timeInterval)).isoformat("T") + "Z" 
@@ -38,7 +48,7 @@ def fetchData(query, timeInterval, apiKey):
         "maxResults": 50,
         "order": "date",
         "publishedAfter": publishedAfter,
-        "q": query,
+        "q": searchQuery,
         "relevanceLanguage": "en",
         "type": "video",
         "key": apiKey
@@ -55,15 +65,8 @@ def fetchData(query, timeInterval, apiKey):
 
     # sleep for he desired interval and fetch again
     time.sleep(timeInterval)
-    fetchData(timeInterval)
+    fetchData()
 
 def startFetchingData():
-    print('Reading data.config...')
-    with open('data/config.json') as f:
-        config = json.load(f)
-
-    timeInterval = int(config.get('ApiFetchInterval'))
-    apiKey = config.get('APIKey')
-    searchQuery = config.get('youtubeSearchQuery')
-    apiFetchThread = threading.Thread(target = fetchData, args=(searchQuery, timeInterval, apiKey, ))
+    apiFetchThread = threading.Thread(target = fetchData)
     apiFetchThread.start()
