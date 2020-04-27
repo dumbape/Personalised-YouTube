@@ -40,7 +40,8 @@ class APIFetch(models.Model):
         if instance and instance.fetchAPI == True:
             from data.fetchData import startFetchingData
             fetchInterval = int(instance.fetchInterval)
-            apiKey = instance.apiKey
+            # currently fetching from first API only
+            apiKey = instance.apiKey[0]
             searchQuery = instance.searchQuery
             startFetchingData(fetchInterval, apiKey, searchQuery)
 
