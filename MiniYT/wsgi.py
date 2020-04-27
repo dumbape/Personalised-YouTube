@@ -9,16 +9,15 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 
 import os, json, threading
 from django.core.wsgi import get_wsgi_application
-from data.models import APIFetch
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MiniYT.settings')
 
 application = get_wsgi_application()
 
-# clear APIFetch model data
-APIFetch.objects.all().delete()
+# # clear APIFetch model data
+# APIFetch.objects.all().delete()
 
-# handler to start fetching API - set to false
-APIFetchEntry = APIFetch(fetchAPI = False)
-APIFetchEntry.save()
+# # handler to start fetching API - set to false
+# APIFetchEntry = APIFetch(fetchAPI = False)
+# APIFetchEntry.save()
 
