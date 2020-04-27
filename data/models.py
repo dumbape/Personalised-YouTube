@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db.models.signals import post_save
+from django.contrib.postgres.fields import ArrayField
 
 # table scema for storing data
 class Video(models.Model):
@@ -21,7 +22,14 @@ class Video(models.Model):
         indexes = [GinIndex(fields=["searchvector"])]
 
 class APIFetch(models.Model):
+
+    def getDefaultAPIKeys():
+        return []
+
     fetchAPI = models.BooleanField(default = False)
+    searchQuery = models.CharField(default = "", null = False, max_length = 50)
+    apiKey = ArrayField(models.CharField(default = "", null = False, max_length = 100), default = getDefaultAPIKeys)
+    fetchInterval = models.IntegerField(default = 60)
 
     def __str__(self):
         return str(self.fetchAPI)
@@ -31,7 +39,10 @@ class APIFetch(models.Model):
         instance = kwargs.get('instance')
         if instance and instance.fetchAPI == True:
             from data.fetchData import startFetchingData
-            startFetchingData()
+            fetchInterval = int(instance.fetchInterval)
+            apiKey = instance.apiKey
+            searchQuery = instance.searchQuery
+            startFetchingData(fetchInterval, apiKey, searchQuery)
 
 # register signal
 post_save.connect(APIFetch.post_save, sender=APIFetch)

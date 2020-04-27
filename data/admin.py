@@ -4,7 +4,7 @@ from . import models
 class APIFetchAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.fetchAPI == True:
-            return ('fetchAPI', )
+            return ('fetchAPI', 'searchQuery', 'apiKey', 'fetchInterval', )
         else:
             return self.readonly_fields
 

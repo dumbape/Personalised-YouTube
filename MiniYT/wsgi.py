@@ -14,10 +14,12 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MiniYT.settings')
 
 application = get_wsgi_application()
 
-# # clear APIFetch model data
-# APIFetch.objects.all().delete()
+from data.models import APIFetch
 
-# # handler to start fetching API - set to false
-# APIFetchEntry = APIFetch(fetchAPI = False)
-# APIFetchEntry.save()
+# clear APIFetch model data
+APIFetch.objects.all().delete()
+
+# handler to start fetching API - set to false
+APIFetchEntry = APIFetch()
+APIFetchEntry.save()
 
