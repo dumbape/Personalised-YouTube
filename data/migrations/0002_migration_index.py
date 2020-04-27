@@ -3,7 +3,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data', '0007_auto_20200426_1849'),
+        ('data', '0001_initial'),
     ]
 
     migration = '''
